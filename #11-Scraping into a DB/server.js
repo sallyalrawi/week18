@@ -12,7 +12,7 @@ var mongojs = require("mongojs");
 // Require axios and cheerio. This makes the scraping possible
 var axios = require("axios");
 var cheerio = require("cheerio");
-
+var request = require("request");
 // Initialize Express
 var app = express();
 
@@ -39,16 +39,16 @@ app.get("/", function(req, res) {
 // from the scrapedData collection as a json (this will be populated
 // by the data you scrape using the next route)
 
-// app.get("/all", function(req, res){
-//     db.scraper.find({} ,function(error,found){
-//         if (error){
-//             console.log(error);
-//         }
-//         else{
-//             res.json(found);
-//         }
-//     });
-// });
+app.get("/all", function(req, res){
+    db.scrapedData.find({} ,function(error,found){
+        if (error){
+            console.log(error);
+        }
+        else{
+            res.json(found);
+        }
+    });
+});
 // // Route 2
 // =======
 // When you visit this route, the server will
@@ -57,7 +57,32 @@ app.get("/", function(req, res) {
 // TIP: Think back to how you pushed website data
 // into an empty array in the last class. How do you
 // push it into a MongoDB collection instead?
+app.get("/scrape",function(req,res){
+  request("https://news.ycombinator.com/",function(error,response,html){
+    var $ =cheerio.load(html) ;
+    $("#.title").each(function(i,element){
+      var title = $(this).children("a").text();
+      var link = $(this).children("a").toArray("href");
 
+      if (title && link){
+        db.scrapedData.save({
+          title:title,
+          link: link
+        },
+        function(error,saved){
+          if (error){
+            console.log(error);
+          }
+          else{
+            console.log(saved);
+          }
+        }
+        )
+      }
+    });
+  });
+  res.send("scrape complete")
+});
 /* -/-/-/-/-/-/-/-/-/-/-/-/- */
 
 // Listen on port 3000
