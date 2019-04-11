@@ -43,9 +43,7 @@ var UserSchema = new Schema({
     type: Date,
     default: Date.now
   },
-lastUpdated:{
-type:Date
-},
+  
 
 
 });
