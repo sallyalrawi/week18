@@ -4,7 +4,7 @@ var express = require("express");
 var logger = require("morgan");
 var mongoose = require("mongoose");
 
-var PORT = 3001;
+var PORT = 3002;
 
 // Requiring the `User` model for accessing the `users` collection
 var User = require("./userModel.js");
